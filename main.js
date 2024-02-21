@@ -3,8 +3,11 @@ let newsList = []
 let newsDesc = ""
 let newsImg = ""
 let newsSrc = ""
+const menus = document.querySelectorAll(".menus button")
+console.log(menus)
+menus.forEach(menu=>menu.addEventListener("click",(event)=>getNewsByCategory(event)))
 const getLatestNews = async ()=>{
-    // const url = new URL(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`);
+    //const url = new URL(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`);
     const url = new URL(`https://mapark-times.netlify.app/top-headlines?`);
     const response= await fetch(url);
     const data = await response.json();
@@ -34,6 +37,17 @@ const render=()=>{
 }
 getLatestNews()
 
+const getNewsByCategory = async (event) =>{
+    const category = event.target.textContent.toLowerCase();
+    console.log("category", category);
+    const url = new URL(`https://mapark-times.netlify.app/top-headlines?category=${category}`);
+    const response = await fetch(url)
+    const data = await response.json()
+    console.log("ddd", data)
+    newsList = data.articles;
+    render()
+}
+
 function sliceDescription(desc){
     if(desc.length >= 200){
         newsDesc = desc.substr(0,200) + "..."
@@ -62,3 +76,7 @@ function checkSource(item){
     }
     return newsSrc
 }
+
+//1. 버튼들에 클릭이벤트 주기
+//2. 카테고리별 뉴스 가져오기
+//3. 뉴스 보여주기
