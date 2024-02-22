@@ -7,7 +7,7 @@ const menus = document.querySelectorAll(".menus button")
 console.log(menus)
 menus.forEach(menu=>menu.addEventListener("click",(event)=>getNewsByCategory(event)))
 const getLatestNews = async ()=>{
-    //const url = new URL(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`);
+    // const url = new URL(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`);
     const url = new URL(`https://mapark-times.netlify.app/top-headlines?`);
     const response= await fetch(url);
     const data = await response.json();
@@ -40,6 +40,7 @@ getLatestNews()
 const getNewsByCategory = async (event) =>{
     const category = event.target.textContent.toLowerCase();
     console.log("category", category);
+    // const url = new URL(`https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${apiKey}`);
     const url = new URL(`https://mapark-times.netlify.app/top-headlines?category=${category}`);
     const response = await fetch(url)
     const data = await response.json()
@@ -47,14 +48,30 @@ const getNewsByCategory = async (event) =>{
     newsList = data.articles;
     render()
 }
+const getNewsByKeyword = async ()=>{
+    const keyword = document.getElementById("search-input").value;
+    console.log("key", keyword);
+    // const url = new URL(`https://newsapi.org/v2/top-headlines?country=us&q=${keyword}&apiKey=${apiKey}`);
+    const url = new URL(`https://mapark-times.netlify.app/top-headlines?q=${keyword}`);
+    const response = await fetch(url)
+    const data = await response.json()
+    console.log("keyword", data)
+    newsList = data.articles;
+    render()
+}
 
 function sliceDescription(desc){
-    if(desc.length >= 200){
-        newsDesc = desc.substr(0,200) + "..."
-    }else if(desc.length === 0){
-        newsDesc = "내용 없음"
+    console.log("desc",desc)
+    if (desc === null){
+        newDesc = "내용 없음"
     }else{
-        newsDesc = desc
+        if(desc.length >= 200){
+            newsDesc = desc.substr(0,200) + "..."
+        }else if(desc.length === 0){
+            newsDesc = "내용 없음"
+        }else{
+            newsDesc = desc
+        }
     }
     return newsDesc
 }
