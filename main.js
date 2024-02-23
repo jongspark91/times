@@ -3,17 +3,33 @@ let newsList = []
 let newsDesc = ""
 let newsImg = ""
 let newsSrc = ""
+// let url = new URL(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`);
 const menus = document.querySelectorAll(".menus button")
+let url = new URL(`https://mapark-times.netlify.app/top-headlines?`)
 console.log(menus)
 menus.forEach(menu=>menu.addEventListener("click",(event)=>getNewsByCategory(event)))
+
+const getNews = async()=>{
+    try{
+        const response= await fetch(url);
+        const data = await response.json();
+        if(response.status===200){
+            if(data.articles.length === 0){
+                throw new Error("No result for this search")
+            }
+            newsList = data.articles;
+            render();
+        }else{
+            throw new Error(data.message)
+        }
+    }catch(error){
+        errorRender(error.message)
+    }
+}
 const getLatestNews = async ()=>{
-    // const url = new URL(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`);
-    const url = new URL(`https://mapark-times.netlify.app/top-headlines?`);
-    const response= await fetch(url);
-    const data = await response.json();
-    newsList = data.articles;
-    console.log(newsList);
-    render()
+    // url = new URL(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`);
+    url = new URL(`https://mapark-times.netlify.app/top-headlines?`);
+    getNews()
     // console.log("rrr",response);
 }
 
@@ -40,24 +56,16 @@ getLatestNews()
 const getNewsByCategory = async (event) =>{
     const category = event.target.textContent.toLowerCase();
     console.log("category", category);
-    // const url = new URL(`https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${apiKey}`);
-    const url = new URL(`https://mapark-times.netlify.app/top-headlines?category=${category}`);
-    const response = await fetch(url)
-    const data = await response.json()
-    console.log("ddd", data)
-    newsList = data.articles;
-    render()
+    // url = new URL(`https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${apiKey}`);
+    url = new URL(`https://mapark-times.netlify.app/top-headlines?category=${category}`);
+    getNews()
 }
 const getNewsByKeyword = async ()=>{
     const keyword = document.getElementById("search-input").value;
     console.log("key", keyword);
-    // const url = new URL(`https://newsapi.org/v2/top-headlines?country=us&q=${keyword}&apiKey=${apiKey}`);
-    const url = new URL(`https://mapark-times.netlify.app/top-headlines?q=${keyword}`);
-    const response = await fetch(url)
-    const data = await response.json()
-    console.log("keyword", data)
-    newsList = data.articles;
-    render()
+    // url = new URL(`https://newsapi.org/v2/top-headlines?country=us&q=${keyword}&apiKey=${apiKey}`);
+    url = new URL(`https://mapark-times.netlify.app/top-headlines?q=${keyword}`);
+    getNews()
 }
 
 function sliceDescription(desc){
@@ -94,6 +102,12 @@ function checkSource(item){
     return newsSrc
 }
 
+const errorRender=(errorMessage)=>{
+    const errorHTML = `<div class="alert alert-danger" role="alert">
+    ${errorMessage}
+</div>`
+document.getElementById("news-board").innerHTML = errorHTML
+}
 //1. 버튼들에 클릭이벤트 주기
 //2. 카테고리별 뉴스 가져오기
 //3. 뉴스 보여주기
