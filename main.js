@@ -3,6 +3,11 @@ let newsList = []
 let newsDesc = ""
 let newsImg = ""
 let newsSrc = ""
+let totalResult = 0
+let page = 1
+const pageSize = 10
+const groupSize = 5
+
 // let url = new URL(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`);
 const menus = document.querySelectorAll(".menus button")
 let url = new URL(`https://mapark-times.netlify.app/top-headlines?`)
@@ -11,6 +16,8 @@ menus.forEach(menu=>menu.addEventListener("click",(event)=>getNewsByCategory(eve
 
 const getNews = async()=>{
     try{
+        url.searchParams.set("page",page);
+        url.searchParams.set("pageSize", pageSize);
         const response= await fetch(url);
         const data = await response.json();
         if(response.status===200){
@@ -18,7 +25,9 @@ const getNews = async()=>{
                 throw new Error("No result for this search")
             }
             newsList = data.articles;
+            totalResult = data.totalResults;
             render();
+            paginationRender();
         }else{
             throw new Error(data.message)
         }
@@ -26,6 +35,61 @@ const getNews = async()=>{
         errorRender(error.message)
     }
 }
+
+const paginationRender=()=>{
+    //total result
+    //page
+    //pgsize
+    //groupsize
+    //totalPages
+    const totalPages = Math.ceil(totalResult/pageSize)
+    //pagegroup
+    const pageGroup = Math.ceil(page/groupSize)
+    //lastpage
+    const lastPage = pageGroup*groupSize
+    if(lastPage>totalPages){
+        lastPage=totalPages;
+    }
+    console.log("last",totalPages)
+    //firstpage
+    const firstPage = lastPage - (groupSize -1)<=0?1: lastPage -(groupSize-1);
+    let paginationHTML = ""
+    if(page===firstPage){
+        ""
+    }else{
+        paginationHTML += `<a class="page-link" onclick="moveToPage(${firstPage})" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+    </a>`
+    paginationHTML += `<li class="page-item" onclick="moveToPage(${page-1})"><a class="page-link">Previous</a></li>`
+    };
+    for(let i=firstPage; i<lastPage;i++){
+        paginationHTML+=`<li class="page-item ${i===page?"active":""}"onclick="moveToPage(${i})"><a class="page-link">${i}</a></li>`
+    }
+    if(page===lastPage){
+        ""
+    }else{
+        paginationHTML+=`<li class="page-item" onclick="moveToPage(${page+1})"><a class="page-link">Next</a></li>`
+        paginationHTML+=`<a class="page-link" onclick="moveToPage(${totalPages})" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>`
+    }
+    document.querySelector(".pagination").innerHTML=paginationHTML
+    // <nav aria-label="Page navigation example">
+    //     <ul class="pagination">
+    //         <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+    //         <li class="page-item"><a class="page-link" href="#">1</a></li>
+    //         <li class="page-item"><a class="page-link" href="#">2</a></li>
+    //         <li class="page-item"><a class="page-link" href="#">3</a></li>
+    //         <li class="page-item"><a class="page-link" href="#">Next</a></li>
+    //     </ul>
+    // </nav>
+}
+
+const moveToPage=(pageNum)=>{
+    getNews()
+    page = pageNum;
+}
+
 const getLatestNews = async ()=>{
     // url = new URL(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`);
     url = new URL(`https://mapark-times.netlify.app/top-headlines?`);
