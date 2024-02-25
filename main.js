@@ -50,7 +50,7 @@ const paginationRender=()=>{
     //pagegroup
     const pageGroup = Math.ceil(page/groupSize)
     //lastpage
-    const lastPage = pageGroup*groupSize
+    let lastPage = pageGroup*groupSize
     if(lastPage>totalPages){
         lastPage=totalPages;
     }
