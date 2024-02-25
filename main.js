@@ -7,7 +7,8 @@ let totalResult = 0
 let page = 1
 const pageSize = 10
 const groupSize = 5
-
+const sidebarMenus = document.querySelectorAll(".sidenav a")
+sidebarMenus.forEach(menu=>menu.addEventListener("click", (event)=>getNewsByCategory(event)))
 // let url = new URL(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`);
 const menus = document.querySelectorAll(".menus button")
 let url = new URL(`https://mapark-times.netlify.app/top-headlines?`)
@@ -21,6 +22,8 @@ const getNews = async()=>{
         const response= await fetch(url);
         const data = await response.json();
         if(response.status===200){
+            console.log("status",response.status)
+            console.log("length",data.articles.length)
             if(data.articles.length === 0){
                 throw new Error("No result for this search")
             }
@@ -28,6 +31,7 @@ const getNews = async()=>{
             totalResult = data.totalResults;
             render();
             paginationRender();
+
         }else{
             throw new Error(data.message)
         }
@@ -135,7 +139,7 @@ const getNewsByKeyword = async ()=>{
 function sliceDescription(desc){
     console.log("desc",desc)
     if (desc === null){
-        newDesc = "내용 없음"
+        newsDesc = "내용 없음"
     }else{
         if(desc.length >= 200){
             newsDesc = desc.substr(0,200) + "..."
@@ -175,3 +179,26 @@ document.getElementById("news-board").innerHTML = errorHTML
 //1. 버튼들에 클릭이벤트 주기
 //2. 카테고리별 뉴스 가져오기
 //3. 뉴스 보여주기
+
+const showInputBox=()=>{
+    let inputHTML = ""
+    inputHTML += `              <input type="text" id="search-input" placeholder="search" />
+    <button class="search-button" onclick="getNewsByKeyword()">Go</button>`
+    document.getElementById("input-area").innerHTML = inputHTML
+    let inputArea = document.getElementById("input-area");
+    if (inputArea.style.display === "inline") {
+      inputArea.style.display = "none";
+    } else {
+      inputArea.style.display = "inline";
+    }
+}
+
+/* Set the width of the side navigation to 250px */
+function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+  }
+  
+  /* Set the width of the side navigation to 0 */
+  function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+  }
